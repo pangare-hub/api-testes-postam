@@ -81,11 +81,11 @@ Publicação do projeto no GitHub com estrutura organizada e README profissional
 
 ### 🧪 Testes Automatizados no Postman
 
-![Postman Testes](docs/assets/testes-postman-results.PNG)
+![Postman Testes](docs/assets/testes-postman-results.png)
 
 ### 📂 SWAGGER UI
 
-![Swagger](docs/assets/swagger.PNG)
+![Swagger](docs/assets/swagger.png)
 
 ---
 
