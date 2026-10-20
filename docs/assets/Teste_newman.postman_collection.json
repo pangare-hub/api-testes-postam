@@ -1,0 +1,268 @@
+{
+  "info": {
+    "_postman_id": "fa3557e7-fcdc-4e42-ac29-65f6dff35fe3",
+    "name": "Teste Newman",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "50495212"
+  },
+  "item": [
+    {
+      "name": "Validar Cadastro de Fornecedores",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "pm.test(\"Fornecedor é criado com sucesso\", function() {\r",
+              "    pm.response.to.have.status(201);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Fornecedor é processado em tempo adequado\", function () {\r",
+              "    pm.expect(pm.reponse.responseTime).to.be.below(10)\r",
+              "});\r",
+              "\r",
+              "const cnpj = Date.now().toString().padStart(14, '0').slice(-14);\r",
+              "pm.variables.set(\"cnpj_unico\", cnpj);"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"company_name\": \"{{$randomCompanyName}}\",\r\n  \"contact_name\": \"{{$randomFullName}}\",\r\n  \"email\": \"{{$randomEmail}}\",\r\n  \"phone\": \"(67) 89999-5555\",\r\n  \"cnpj\": \"{{cnpj_unico}}\",\r\n  \"uf\": \"PR\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseURL}}/suppliers",
+          "host": [
+            "{{baseURL}}"
+          ],
+          "path": [
+            "suppliers"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Validar Cadastro de Produtos",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "//Armazenando a resposta JSON para a validação\r",
+              "const jsonData = pm.response.json();\r",
+              "\r",
+              "// 1. Validação de Sucesso e Status Code (Essencial)\r",
+              "pm.test(\"Produto Criado com Sucesso\", function () {\r",
+              "    pm.response.to.have.status(201); //Garante que o servidor processou a criação [14,15]\r",
+              "});\r",
+              "\r",
+              "// 2. Validação do Contrato Técnico (Tipagem e Estrutura)\r",
+              "pm.test(\"Produto Criado Apresenta Dados e Mensagem de Sucesso Válidos\", function() {\r",
+              "    pm.expect(jsonData.data).to.be.an('object'); //o retorno principal deve ser um objeto\r",
+              "    pm.expect(jsonData.data.id).to.be.a('number');//id deve ser numérico e gerado pelo banco\r",
+              "    pm.expect(jsonData.data.is_active).to.be.a('boolean');\r",
+              "    pm.expect(jsonData.data.is_active).to.be.true;\r",
+              "    pm.expect(jsonData.data.name).to.be.a('string').and.to.have.lengthOf.at.least(1);// Nome não pode ser vazio\r",
+              "    pm.expect(jsonData.data.price).to.be.a('number'); //Preço deve mnanter a tipagem decimal\r",
+              "    pm.expect(jsonData.mensagens).to.be.an('array').that.includes(\"Produto criado com sucesso!\");// Mensagem de Produto\r",
+              "});\r",
+              "\r",
+              "// 3.Validação de Regras de Negócio (Consistência)\r",
+              "pm.test(\"Produto Apresenta Código de Identificação e Nome Corretos\", function () {\r",
+              "    pm.expect(jsonData.data.name).to.eql(\"Monitor IVA\");\r",
+              "    pm.expect(jsonData.data.sku).to.include(\"AAAL-2026\")\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"name\": \"{{$randomLastName}}\",\r\n  \"price\": 10000000,\r\n  \"stock_quantity\": 30,\r\n  \"sku\": \"ALH-2026\",\r\n  \"category_id\": 10,\r\n  \"supplier_id\": 10\r\n}\r\n\r\n/*\r\ntipos de campos - string, number\r\ncampos obrigatórios\r\n\r\n*/",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseURL}}/products",
+          "host": [
+            "{{baseURL}}"
+          ],
+          "path": [
+            "products"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Validar Cadastro de categoria",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "// Verificar Status Code 201",
+              "pm.test('Categoria Cadastrada com Sucesso', function () {",
+              "    pm.response.to.have.status(201);",
+              "});",
+              "",
+              "// Verificar estrutura JSON válida",
+              "pm.test('Categoria Apresenta Informações em Formato Válido', function () {",
+              "    pm.response.to.be.json;",
+              "});",
+              "",
+              "// Verificar que name não está vazio",
+              "pm.test('Categoria Cadastrada com Nome Preenchido', function () {",
+              "    const responseData = pm.response.json().data;",
+              "    pm.expect(responseData.name).to.not.be.empty;",
+              "    pm.expect(responseData.name).to.be.a('string');",
+              "});",
+              "",
+              "// Verificar que description não está vazio",
+              "pm.test('Categoria Cadastrada com Descrição Preenchida', function () {",
+              "    const responseData = pm.response.json().data;",
+              "    pm.expect(responseData.description).to.not.be.empty;",
+              "    pm.expect(responseData.description).to.be.a('string');",
+              "});",
+              "",
+              "// Verificar mensagem de sucesso",
+              "pm.test('Categoria Apresenta Mensagem de Sucesso Apropriada', function () {",
+              "    const mensagens = pm.response.json().mensagens;",
+              "    pm.expect(mensagens).to.be.an('array');",
+              "    pm.expect(mensagens).to.include('Categoria criada com sucesso!');",
+              "});",
+              "",
+              "// Verificar que is_active é true",
+              "pm.test('Categoria Cadastrada como Ativa', function () {",
+              "    const responseData = pm.response.json().data;",
+              "    pm.expect(responseData.is_active).to.equal(true);",
+              "});",
+              "",
+              "// 5 Verificações Adicionais Importantes:",
+              "",
+              "// 1. Verificar que ID é um número positivo",
+              "pm.test('Categoria Apresenta Identificador Numérico Positivo', function () {",
+              "    const responseData = pm.response.json().data;",
+              "    pm.expect(responseData.id).to.be.a('number');",
+              "    pm.expect(responseData.id).to.be.greaterThan(0);",
+              "});",
+              "",
+              "// 2. Verificar que slug foi gerado corretamente (não vazio)",
+              "pm.test('Categoria Apresenta Endereço Amigável Gerado e Preenchido', function () {",
+              "    const responseData = pm.response.json().data;",
+              "    pm.expect(responseData.slug).to.not.be.empty;",
+              "    pm.expect(responseData.slug).to.be.a('string');",
+              "});",
+              "",
+              "// 3. Verificar que created_at é uma data válida",
+              "pm.test('Categoria Apresenta Data de Cadastro Válida', function () {",
+              "    const responseData = pm.response.json().data;",
+              "    pm.expect(responseData.created_at).to.be.a('string');",
+              "    const dateRegex = /^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}/;",
+              "    pm.expect(responseData.created_at).to.match(dateRegex);",
+              "});",
+              "",
+              "// 4. Verificar que display_order é um número (padrão 0)",
+              "pm.test('Categoria Apresenta Ordem de Exibição Numérica', function () {",
+              "    const responseData = pm.response.json().data;",
+              "    pm.expect(responseData.display_order).to.be.a('number');",
+              "    pm.expect(responseData.display_order).to.equal(0);",
+              "});",
+              "",
+              "// 5. Verificar que a resposta contém a estrutura completa esperada",
+              "pm.test('Categoria Cadastrada Contém Todas as Informações Esperadas', function () {",
+              "    const responseData = pm.response.json().data;",
+              "    pm.expect(responseData).to.have.all.keys('id', 'name', 'slug', 'description', 'image_url', 'icon', 'display_order', 'is_active', 'created_at');",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"name\": \"{{$randomJobArea}}--{{$randomInt}}\",\r\n    \"description\": \"{{$randomLoremSentence}}\"\r\n}"
+        },
+        "url": {
+          "raw": "{{baseURL}}/categories",
+          "host": [
+            "{{baseURL}}"
+          ],
+          "path": [
+            "categories"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}
