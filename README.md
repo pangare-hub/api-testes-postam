@@ -122,7 +122,7 @@ Publicação do projeto no GitHub com estrutura organizada e README profissional
 
 ---
 
-## 👤 Autor
+## 👤 Leonardo Pangarte Gubaua
 
 Desenvolvido durante formação prática em testes de API REST.
 
