@@ -79,17 +79,9 @@ Publicação do projeto no GitHub com estrutura organizada e README profissional
 
 ![Runner](docs/assets/testes-runner.png)
 
-### 🧪 Testes Automatizados com Runner
-
-![Postman Testes](docs/assets/postman-automation.PNG)
-
 ### 🧪 Testes Automatizados no Postman
 
 ![Postman Testes](docs/assets/testes-postman-results.PNG)
-
-### 📂 Data Driven — Massa de Dados
-
-![Data Driven](docs/assets/data-driven-json.PNG)
 
 ### 📂 SWAGGER UI
 
