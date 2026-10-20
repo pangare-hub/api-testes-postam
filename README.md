@@ -77,7 +77,7 @@ Publicação do projeto no GitHub com estrutura organizada e README profissional
 
 ### ✅ Collection Runner — Resultado dos Testes HTML
 
-![Runner](docs/assets/testes-runner.PNG)
+![Runner](docs/assets/testes-runner.png)
 
 ### 🧪 Testes Automatizados com Runner
 
